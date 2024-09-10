@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+   
+     <link rel="stylesheet" href="masonry.css">
+</head>
+<body>
+  <nav id="navbar">
+    <button type="button" onclick="openmenu()" id="openn"><img src="/assets/imgs/logo/hamburger.png" alt="hamburger" id="ham_img">Menu</button>
+  </div>
+<div id="showmenu" class="navbar-mobile-wrapper">
+<ul>
+  <li>
+    <a href="index.html" data-text="Home">Home</a>
+  </li>
+  <li><a href="" data-text="About">About</a></li>
+  <li>
+    <a href="" data-text="Blogs">Blogs</a>
+  </li>
+  <li>
+    <a href="portfoliogallery.html" data-text="Portfolio">Portfolio</a>
+  </li>
+  <li><a href="" data-text="Contact">Contact</a></li>
+  <li><a href="" data-text="Career">Career</a></li>
+</ul>
+     
+</ul>
+<button id="close" onclick="closemenu()">&times; Close</button>
+</div>
+    <div id="navbar_container">
+    <a href="indexatul.html"><img src="/assets/imgs/logo/logo.png" alt="logo" id="logo"></a></div>
+
+    <ul class="social-media hover-1">
+      <li>
+        <a target="_blank" href=${WEBSITE_SOCIAL_LINKS.FACEBOOK}
+          ><i class="fa-brands fa-facebook"></i
+        ></a>
+      </li>
+      <li>
+        <a target="_blank" href=${WEBSITE_SOCIAL_LINKS.INSTAGRAM}
+          ><i class="fa-brands fa-instagram"></i
+        ></a>
+      </li>
+      <li>
+        <a target="_blank" href=${WEBSITE_SOCIAL_LINKS.TWITTER}
+          ><i class="fa-brands fa-twitter"></i
+        ></a>
+      </li>
+      <li>
+        <a target="_blank" href=${WEBSITE_SOCIAL_LINKS.WHATSAPP}
+          ><i class="fa-brands fa-whatsapp"></i
+        ></a>
+      </li>
+    </ul>
+   </nav>
+    
+        
+
+       <section id="port-section">
+        <div id="port_button">
+          <ul>
+            <li><a href="portfoliogallery.html" class="nav-link">Images</a></li> 
+            <li><a href="videogallery.html" class="nav-link">Videos</a></li> 
+          </ul>
+        </div>
+        <div class="container cont-cover">
+          <div id="cont-portfolio">
+            
+          <div id="gallery"></div>
+          
+          <div id="pagination"></div>
+          </div>
+       </div>
+      </section>
+
+      <div id="footer-layout"></div>
+<script>
+  window.onload = function() {
+    // Get all navigation links
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Loop through each link
+    navLinks.forEach(link => {
+      // If the link's href matches the current URL
+      if (link.href === window.location.href) {
+        link.classList.add('active'); // Add the 'active' class
+      }
+    });
+  };
+
+
+
+
+      
+       let galleryData = []; // Array to hold gallery data
+       let itemsPerPage = 10; // Number of items per page for pagination
+       let currentPage = 1; // Current page number
+   
+       async function fetchGallery() {
+         try {
+           const response = await fetch('https://api.webbuilder.technolitics.com/api/v1/website-builder/website/gallery/get-all-galleries/65d0951a52fd1189b6d9f8df?type=IMAGE');
+   
+           if (!response.ok) {
+             throw new Error('HTTP error! Status: ' + response.status);
+           }
+   
+           const data = await response.json();
+   
+           if (!data || !data.data) {
+             throw new Error('Unexpected data structure!');
+           }
+   
+           galleryData = data.data;
+           displayGallery();
+         } catch (error) {
+           console.error('Error fetching gallery:', error);
+           document.getElementById('gallery').innerText = 'Failed to load gallery.';
+         }
+       }
+   
+       function displayGallery() {
+        const galleryContainer = document.getElementById('gallery');
+        galleryContainer.innerHTML = ''; // Clear the current gallery content
+      
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+      
+        galleryData.slice(startIndex, endIndex).forEach((gallery, index) => {
+          const mediaDetails = gallery.mediaDetails;
+      
+          if (mediaDetails && mediaDetails.mediaType === 'IMAGE' && Array.isArray(mediaDetails.images) && mediaDetails.images.length > 0) {
+            const imagePath = "https://technolitics-s3-bucket.s3.ap-south-1.amazonaws.com/websitebuilder-s3-bucket/";
+            const coverImageUrl = `${imagePath}${mediaDetails.images[0]}`; // First image as cover
+      
+            const galleryElement = document.createElement('div');
+            galleryElement.className = 'swiper-slide'; // Set gallery item class
+      
+            galleryElement.innerHTML = `
+              <img src="${coverImageUrl}" alt="Cover Image" class="cover-image" data-gallery-index="${index}" />
+              <h4 id="title">${gallery.title}</h4>
+            `;
+      
+            // Redirect to the new page on thumbnail click, passing title as a URL parameter
+            galleryElement.querySelector('.cover-image').addEventListener('click', function() {
+              const encodedTitle = encodeURIComponent(gallery.title);
+              window.location.href = `showfullgallery.html?galleryIndex=${index}&title=${encodedTitle}`;
+            });
+      
+            galleryContainer.appendChild(galleryElement);
+          }
+        });
+      }
+      
+   
+     
+       fetchGallery();
+
+
+      </script>
+
+
+      <script src="menu.js"></script>    
+     
+      <script src="/assets/data/appConfig.js"></script>
+      <script src="/assets/js/components/footer.js"></script> 
+      
+</body>
+</html>

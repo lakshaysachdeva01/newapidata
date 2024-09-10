@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Data Fetch Example</title>
+  <link rel="stylesheet" href="apiprct.css">
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+  <link rel="stylesheet" href="masonry.css">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .post {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <nav id="navbar">
+    <button type="button" onclick="openmenu()" id="openn"><img src="/assets/imgs/logo/hamburger.png" alt="hamburger" id="ham_img">Menu</button>
+  </div>
+<div id="showmenu" class="navbar-mobile-wrapper">
+<ul>
+  <li>
+    <a href="index.html" >Home</a>
+  </li>
+  <li><a href="">About</a></li>
+  <li>
+    <a href="" >Blogs</a>
+  </li>
+  <li>
+    <a href="portfoliogallery.html" >Portfolio</a>
+  </li>
+  <li><a href="" >Contact</a></li>
+  <li><a href="" >Career</a></li>
+</ul>
+     
+</ul>
+<button id="close" onclick="closemenu()">&times; Close</button>
+</div>
+    <div id="navbar_container">
+    <a href="indexatul.html"><img src="/assets/imgs/logo/logo.png" alt="logo" id="logo"></a></div>
+
+    <ul class="social-media hover-1">
+      <li>
+        <a target="_blank" href=""
+          ><i class="fa-brands fa-facebook"></i
+        ></a>
+      </li>
+      <li>
+        <a target="_blank" href=""
+          ><i class="fa-brands fa-instagram"></i
+        ></a>
+      </li>
+      <li>
+        <a target="_blank" href=""
+          ><i class="fa-brands fa-twitter"></i
+        ></a>
+      </li>
+      <li>
+        <a target="_blank" href=""
+          ><i class="fa-brands fa-whatsapp"></i
+        ></a>
+      </li>
+    </ul>
+   </nav>
+    
+  
+  <section id="port-section">
+  <h2>Work-Portfolio</h2>
+  <div class="container cont-cover">
+    <div id="cont-portfolio">
+      
+    <div id="gallery"></div>
+    
+    <div id="pagination"></div>
+    </div>
+ </div>
+</section>
+
+  <h1>Customer Reviews</h1>
+  <div id="test-container">
+    <button type="button" id="button-prv" class="button">&laquo;</button>
+    <div class="testswiper swiper-container">
+      <div id="testimonials" class="swiper-wrapper"></div>
+    </div>
+    <button type="button" id="button-nxt" class="button">&raquo;</button>
+  </div>
+
+
+
+  
+  <div id="ourclient" class="swiper-container-2">
+    <button type="button" id="button-prev" class="buttn">&laquo;</button>
+    <div class="swiper logo__slider">
+  <div id="clientle" class="swiper-wrapper"></div>
+</div>
+  <button type="button" id="button-next" class="buttn">&raquo;</button>
+  <div class="swiper-pagination"></div>
+</div>
+
+
+<div id="footer-layout"></div>
+  <script>
+   
+
+
+
+    async function fetchtestimonials() {
+      try {
+        const response = await fetch('https://api.webbuilder.technolitics.com/api/v1/website-builder/website/testimonial/get-all-testimonials/65d0951a52fd1189b6d9f8df');
+
+        if (!response.ok) {
+          throw new Error('HTTP error! Status: ' + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error('Unexpected data structure!');
+        }
+
+        const testimonialsContainer = document.getElementById('testimonials');
+
+        data.data.forEach(testimonial => {
+          console.log('Image URL:', testimonial.image);
+
+          const testimonialElement = document.createElement('div');
+          testimonialElement.className = 'swiper-slide'; 
+
+          const imagepath = "https://technolitics-s3-bucket.s3.ap-south-1.amazonaws.com/websitebuilder-s3-bucket/";
+          const imageUrl = `${imagepath}${testimonial.image}`;
+
+          testimonialElement.innerHTML = `
+                    <div class="testimonial">
+                      <img src="${imageUrl}" class="image_test" alt="${testimonial.name}" />
+                      <div class="text">
+                        <img src="quote-2.svg" alt="quote">
+                        <p class="review">${testimonial.review}</p>
+                        <h3 class="name">${testimonial.name}</h3>
+                        <p class="profile">${testimonial.companyProfile}</p>
+                      </div>
+                    </div>
+                `;
+          testimonialsContainer.appendChild(testimonialElement);
+        });
+
+       
+        const swiper = new Swiper('.swiper-container', {
+          slidesPerView: 1,
+          spaceBetween: 30,
+          loop: true,
+          navigation: {
+            nextEl: '#button-nxt',
+            prevEl: '#button-prv',
+          },
+          // Enable touch functionality
+          simulateTouch: true,
+          touchEventsTarget: 'container',
+          touchRatio: 1,
+          touchAngle: 45,
+          grabCursor: true,
+          
+          breakpoints: {
+            768: {
+              slidesPerView: 1,
+            },
+            1024: {
+              slidesPerView: 1,
+            },
+          },
+        });
+        
+
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+        document.getElementById('testimonials').innerText = 'Failed to load testimonials.';
+      }
+    }
+
+   
+    async function fetchclient() {
+      try {
+        const response = await fetch('https://api.webbuilder.technolitics.com/api/v1/website-builder/website/association/get-all-associations/65d0951a52fd1189b6d9f8df?type=CLIENT');
+
+        if (!response.ok) {
+          throw new Error('HTTP error! Status: ' + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error('Unexpected data structure!');
+        }
+
+        const clientContainer = document.getElementById('clientle');
+
+        if (data.data.length === 0) {
+          clientContainer.innerHTML = 'No clients available.';
+          return;
+        }
+
+        data.data.forEach(client => {
+          const clientElement = document.createElement('div');
+          clientElement.className = 'swiper-slide'; 
+
+          const imagepath = "https://technolitics-s3-bucket.s3.ap-south-1.amazonaws.com/websitebuilder-s3-bucket/";
+          const imageUrl = `${imagepath}${client.logo}`;
+
+          clientElement.innerHTML = 
+          `
+          <img src="${imageUrl}" alt="${client.logo}" />`;
+          clientContainer.appendChild(clientElement);
+        });
+
+
+        const swiper = new Swiper('.swiper', {
+          slidesPerView: '5', 
+          spaceBetween: 1,
+          freeMode: false,
+          loop:true,
+          autoplay: {
+            delay: 1500, 
+            disableOnInteraction: false,
+          },
+          navigation: {
+            nextEl: '#button-next',
+            prevEl: '#button-prev',
+          },
+        
+        });
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+        document.getElementById('clientle').innerText = 'Failed to load clients.';
+      }
+    }
+
+
+   
+      
+      let galleryData = []; // Array to hold gallery data
+      let itemsPerPage = 10; // Number of items per page for pagination
+      let currentPage = 1; // Current page number
+  
+      async function fetchGallery() {
+        try {
+          const response = await fetch('https://api.webbuilder.technolitics.com/api/v1/website-builder/website/gallery/get-all-galleries/65d0951a52fd1189b6d9f8df?type=IMAGE');
+  
+          if (!response.ok) {
+            throw new Error('HTTP error! Status: ' + response.status);
+          }
+  
+          const data = await response.json();
+  
+          if (!data || !data.data) {
+            throw new Error('Unexpected data structure!');
+          }
+  
+          galleryData = data.data;
+          displayGallery();
+        } catch (error) {
+          console.error('Error fetching gallery:', error);
+          document.getElementById('gallery').innerText = 'Failed to load gallery.';
+        }
+      }
+  
+      function displayGallery() {
+        const galleryContainer = document.getElementById('gallery');
+        galleryContainer.innerHTML = ''; // Clear the current gallery content
+  
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+  
+        galleryData.slice(startIndex, endIndex).forEach((gallery, index) => {
+          const mediaDetails = gallery.mediaDetails;
+  
+          if (mediaDetails && mediaDetails.mediaType === 'IMAGE' && Array.isArray(mediaDetails.images) && mediaDetails.images.length > 0) {
+            const imagePath = "https://technolitics-s3-bucket.s3.ap-south-1.amazonaws.com/websitebuilder-s3-bucket/";
+            const coverImageUrl = `${imagePath}${mediaDetails.images[0]}`; // First image as cover
+  
+            const galleryElement = document.createElement('div');
+            galleryElement.className = 'swiper-slide'; // Set gallery item class
+  
+            galleryElement.innerHTML = `
+              
+              <img src="${coverImageUrl}" alt="Cover Image" class="cover-image" data-gallery-index="${index}" />
+             
+            `;
+
+
+
+             
+       
+  
+            // Redirect to new page on thumbnail click
+            galleryElement.querySelector('.cover-image').addEventListener('click', function() {
+              const encodedTitle = encodeURIComponent(gallery.title);
+              window.location.href = `showfullgallery.html?galleryIndex=${index}&title=${encodedTitle}`;
+            });
+  
+            galleryContainer.appendChild(galleryElement);
+          }
+
+        });
+      }
+  
+    
+      fetchGallery();
+
+
+    fetchtestimonials();
+    fetchclient();
+    
+
+
+
+  
+
+  </script>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="menu.js"></script>
+<script src="/assets/data/appConfig.js"></script>
+<script src="/assets/js/components/footer.js"></script> 
+  
+</body>
+
+</html>
